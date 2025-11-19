@@ -43,13 +43,13 @@ function EditListingPage() {
     const l = res.data.listing;
     //Provide safe fallback metadata 
     const m = l.metadata || {
-    propertyType: "",
-    bathrooms: 0,
-    bedrooms: [],
-    amenities: [],
-    images: [],
-    youtubeUrl: ""
-  };
+      propertyType: "",
+      bathrooms: 0,
+      bedrooms: [],
+      amenities: [],
+      images: [],
+      youtubeUrl: ""
+    };
 
     setTitle(l.title);
     setAddress(l.address);
@@ -113,15 +113,15 @@ function EditListingPage() {
       }
     };
 
-  await axios.put(
-    `http://localhost:5005/listings/${id}`,
-    body,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+    await axios.put(
+      `http://localhost:5005/listings/${id}`,
+      body,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
       }
-    }
-  );
+    );
 
     navigate("/hosted");
   };
