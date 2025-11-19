@@ -87,7 +87,7 @@ function HostedListingsPage() {
           {/* Title */}
           <h2>{list.title}</h2>
 
-            {/* REQUIRED FIELDS */}
+          {/* REQUIRED FIELDS */}
           <p><b>Property Type:</b> {list.metadata.propertyType}</p>
           <p><b>Beds:</b> {list.metadata.bedrooms.length}</p>
           <p><b>Bathrooms:</b> {list.metadata.bathrooms}</p>
