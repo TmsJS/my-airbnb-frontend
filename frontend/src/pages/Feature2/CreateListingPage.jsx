@@ -30,6 +30,7 @@ function CreateListingPage() {
     navigate("/hosted");
   };
 
+
   return (
     <div>
       <h1>Create Listing</h1>
