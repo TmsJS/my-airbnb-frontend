@@ -2,6 +2,23 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
+/*
+2.2.1. Hosted Listings Screen
+A unique route must exist for this screen
+A screen of all of YOUR listings (that you created) is displayed, 
+where each listing shows the:
+1.Title
+2.Property Type
+3.Number of beds (not bedrooms)
+4.Number of bathrooms
+5.Thumbnail of the listing
+6.SVG rating of the listing (based on user ratings)
+7.Number of total reviews
+8.Price (per night)
+
+Each listing should have a clickable element relating to it that takes you to the screen to edit that particular listing (2.2.3).
+A button exists on this screen that allows you to delete a particular listing (this can be present for each listing)
+*/
 
 function HostedListingsPage() {
   const [listings, setListings] = useState([]);
@@ -11,14 +28,22 @@ function HostedListingsPage() {
   }, []);
 
   const loadListings = async () => {
+    // 1. 获取所有 listings（只有 owner、title、thumbnail）
     const res = await axios.get("http://localhost:5005/listings");
-    const allListings = res.data.listings;
-
     const myEmail = localStorage.getItem("email");
 
-    const mine = allListings.filter(list => list.owner === myEmail);
+    // 2. 过滤自己的 listing
+    const mine = res.data.listings.filter(l => l.owner === myEmail);
 
-    setListings(mine);
+    // 3. 对每个 listing 请求完整详情
+    const detailed = await Promise.all(
+      mine.map(async (l) => {
+        const detail = await axios.get(`http://localhost:5005/listings/${l.id}`);
+        return { id: l.id, ...detail.data.listing };
+      })
+    );
+
+    setListings(detailed);
   };
 
   const deleteListing = async (id) => {
@@ -30,19 +55,73 @@ function HostedListingsPage() {
     <div>
       <h1>Your Hosted Listings</h1>
 
+      {/* Create Button */}
       <Button component={Link} to="/hosted/create" variant="contained">
         Create New Listing
       </Button>
 
-      {listings.map(list => (
-        <div key={list.id} style={{ border: "1px solid #ccc", margin: 10 }}>
-          <img src={list.thumbnail} width="100" />
+      <br /><br />
 
-          <h3>{list.title}</h3>
+      {listings.map((list) => (
+        <div 
+          key={list.id} 
+          style={{
+            border: "1px solid #ccc",
+            padding: 10,
+            margin: 10,
+            borderRadius: 8
+          }}
+        >
+          {/* Thumbnail */}
+          <img src={list.thumbnail} width="150" />
 
-          <Button component={Link} to={`/hosted/edit/${list.id}`} variant="outlined">Edit</Button>
-          <Button onClick={() => deleteListing(list.id)} variant="outlined" color="error">Delete</Button>
-          <Button component={Link} to={`/hosted/publish/${list.id}`} variant="outlined" color="success">Publish</Button>
+          {/* Title */}
+          <h2>{list.title}</h2>
+
+          {/* REQUIRED FIELDS */}
+          <p><b>Property Type:</b> {list.metadata.type}</p>
+          <p><b>Beds:</b> {list.metadata.beds}</p>
+          <p><b>Bathrooms:</b> {list.metadata.bathrooms}</p>
+          <p><b>Price per night:</b> ${list.price}</p>
+          <p><b>Total reviews:</b> {list.reviews.length}</p>
+
+          {/* SVG rating (simple stars) */}
+          <p>
+            <b>Rating:</b> {
+              list.reviews.length > 0
+                ? "⭐".repeat(Math.round(list.reviews.reduce((a,r)=>a+r.score,0) / list.reviews.length))
+                : "No ratings"
+            }
+          </p>
+
+          {/* Buttons */}
+          <Button 
+            component={Link} 
+            to={`/hosted/edit/${list.id}`} 
+            variant="outlined"
+          >
+            Edit
+          </Button>
+
+          <Button 
+            onClick={() => deleteListing(list.id)}
+            variant="outlined"
+            color="error"
+            sx={{ marginLeft: 1 }}
+          >
+            Delete
+          </Button>
+
+          <Button 
+            component={Link}
+            to={`/hosted/publish/${list.id}`}
+            variant="outlined"
+            color="success"
+            sx={{ marginLeft: 1 }}
+          >
+            Publish
+          </Button>
+
         </div>
       ))}
     </div>

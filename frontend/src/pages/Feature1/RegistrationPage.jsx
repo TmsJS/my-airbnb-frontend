@@ -51,6 +51,7 @@ function RegistrationPage(props) {
             const response = await axios.post('http://localhost:5005/user/auth/register', bodyObj)
             console.log(response.message); 
             localStorage.setItem('token', response.data.token);
+            localStorage.setItem('email', email); 
             props.setToken(response.data.token);
             navigate('/dashboard');
         } //4. [a reasonable error message] 
