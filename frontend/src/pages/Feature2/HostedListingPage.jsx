@@ -87,12 +87,12 @@ function HostedListingsPage() {
           {/* Title */}
           <h2>{list.title}</h2>
 
-          {/* REQUIRED FIELDS */}
-        <p><b>Property Type:</b> {list.metadata.propertyType}</p>
-        <p><b>Beds:</b> {list.metadata.bedrooms.length}</p>
-        <p><b>Bathrooms:</b> {list.metadata.bathrooms}</p>
-        <p><b>Price per night:</b> ${list.price}</p>
-        <p><b>Total reviews:</b> {list.reviews.length}</p>
+            {/* REQUIRED FIELDS */}
+          <p><b>Property Type:</b> {list.metadata.propertyType}</p>
+          <p><b>Beds:</b> {list.metadata.bedrooms.length}</p>
+          <p><b>Bathrooms:</b> {list.metadata.bathrooms}</p>
+          <p><b>Price per night:</b> ${list.price}</p>
+          <p><b>Total reviews:</b> {list.reviews.length}</p>
 
           {/* SVG rating (simple stars) */}
           <p>

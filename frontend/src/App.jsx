@@ -6,18 +6,15 @@ import Grid from '@mui/material/Grid';
 import axios from 'axios';
 
 
-// import all pages files from src/pages/FeatureX/?.jsx
+// import all pages files from src/pages/Feature?/?.jsx
 /* 2.1 AUTH */
-// 2.1.1. Login Screen
 import LoginPage from './pages/Feature1/LoginPage.jsx';
-// 2.1.2. Register Screen
 import RegisterPage from './pages/Feature1/RegistrationPage.jsx';
 
 import LandingPage from './pages/Feature1/LandingPage.jsx';
 import Dashboard from './pages/Feature1/Dashboard.jsx';
 
 /* 2.2 Hosted Listing */
-// 2.2.1. Hosted Listings Screen
 import HostedListingsPage from './pages/Feature2/HostedListingPage.jsx';
 import CreateListingPage from './pages/Feature2/CreateListingPage.jsx';
 import EditListingPage from './pages/Feature2/EditListingPage.jsx';
@@ -92,7 +89,7 @@ function App() {
           </Grid>
         </Grid>
       </nav>
-            {/* Routes */}
+      {/* Routes */}
       <Routes>
         {token !== 'CHECKING' && (
           <>
@@ -121,6 +118,7 @@ function App() {
           </>
         )}
       </Routes>
+
     </div>
   );
 }
