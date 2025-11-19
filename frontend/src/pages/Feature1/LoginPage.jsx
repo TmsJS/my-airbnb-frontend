@@ -27,22 +27,47 @@ function LoginPage(props) {
       setPassword("");
       setEmail("");
   };
-
+    // Submit function 
     const submit = async () => {
-        const bodyObj = {email,password};
-        try{
-            const response = await axios.post('http://localhost:5005/user/auth/login', bodyObj)
-            localStorage.setItem('token', response.data.token);
-            props.setToken(response.data.token);
-            navigate('/dashboard');
+      const bodyObj = { email, password };
 
-        // 2.If the form submission fails, a reasonable error message is shown
-        }catch (error) {
-            setMessage("status " + error.status + " INVALID CREDENTIALS");
-            setIsError(true);  
-            console.log(error.message);
+      try {
+        const response = await axios.post(
+          'http://localhost:5005/user/auth/login',
+          bodyObj
+        );
+
+        localStorage.setItem('token', response.data.token);
+        props.setToken(response.data.token);
+        navigate('/dashboard');
+
+      } catch (error) {
+        let msg = "";
+
+        if (!error.response) {
+          // Network connection error
+          msg = "Unable to connect to server, please check your network.";
+        } else {
+          const status = error.response.status;
+
+          if (status === 400) {
+            msg = "Invalid email or password.";
+          } else if (status === 403) {
+            msg = "You are not allowed to log in.";
+          } else if (status >= 500) {
+            msg = "Server error. Please try again later.";
+          } else if (error.response.data?.error) {
+            msg = error.response.data.error;  // From backend
+          } else {
+            msg = `Unexpected error (status ${status}).`;
+          }
         }
-    }
+
+        setMessage(msg);
+        setIsError(true);
+      }
+    };
+
 
     // 4.The form must be able to be submitted on [enter key] in any of the fields
     const handleKeyDown = (e) => {
