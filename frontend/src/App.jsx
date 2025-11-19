@@ -6,15 +6,23 @@ import Grid from '@mui/material/Grid';
 import axios from 'axios';
 
 
-// import all pages files here
+// import all pages files from src/pages/FeatureX/?.jsx
+/* 2.1 AUTH */
 // 2.1.1. Login Screen
 import LoginPage from './pages/Feature1/LoginPage.jsx';
-import RegisterPage from './pages/Feature1/RegistrationPage.jsx';
 // 2.1.2. Register Screen
+import RegisterPage from './pages/Feature1/RegistrationPage.jsx';
 
 import LandingPage from './pages/Feature1/LandingPage.jsx';
-import HostedListingsPage from './pages/Feature1/HostedListingPage.jsx';
 import Dashboard from './pages/Feature1/Dashboard.jsx';
+
+/* 2.2 Hosted Listing */
+// 2.2.1. Hosted Listings Screen
+import HostedListingsPage from './pages/Feature2/HostedListingPage.jsx';
+import CreateListingPage from './pages/Feature2/CreateListingPage.jsx';
+import EditListingPage from './pages/Feature2/EditListingPage.jsx';
+import PublishListingPage from './pages/Feature2/PublishListingPage.jsx';
+
 
 function App() {
   const [token, setToken] = useState('CHECKING');
@@ -61,9 +69,10 @@ function App() {
         <Grid container spacing={10}>
           <Grid container spacing={5}>
 
-            {/* Home always links to "/"----> LandingPage */}
-            {/* A button exists that will take the user to the screen to view [all listings] */}
-            <Button component={Link} to="/" variant="contained" color="success">Home</Button>
+            {/* Explore always links to "/"----> LandingPage */}
+            {/* A button exists that will take the user to the screen to view [all listings] 
+                Yeah, AirBnb call this button as Expore */}
+            <Button component={Link} to="/" variant="contained" color="success">Explore</Button>
 
             {token ? (
               <>{/* for a user who is logged in / authorised: */}
@@ -91,15 +100,22 @@ function App() {
             {/* http://localhost:3000/--->LandingPage */}
             <Route path="/" element={<LandingPage />} />
 
-            {/* AUTH */}
+            {/* 2.1 AUTH */}
             {/* localhost:3000/login--->LoginPage */}
             <Route path="/login" element={<LoginPage setToken={setToken} />} />
             {/* localhost:3000/register--->RegisterPage  */}
             <Route path="/register" element={<RegisterPage setToken={setToken} />} />
 
-            {/* HOSTED LISTINGS */}
+            {/* 2.2 HOSTED LISTINGS */}
+            {/* 2.2.1 Hosted Listings Screen */}
             <Route path="/hosted" element={<HostedListingsPage />} />
-
+            {/* 2.2.2 Create Listing */}
+            <Route path="/hosted/create" element={<CreateListingPage />} />
+            {/* 2.2.4 Edit Listing (with listing ID) */}
+            <Route path="/hosted/edit/:id" element={<EditListingPage />} />
+            {/* 2.2.5 Publish Listing */}
+            <Route path="/hosted/publish/:id" element={<PublishListingPage />} />
+            
             {/* DASHBOARD */}
             <Route path="/dashboard" element={<Dashboard token={token} />} />
           </>
