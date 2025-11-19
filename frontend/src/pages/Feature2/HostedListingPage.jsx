@@ -28,14 +28,11 @@ function HostedListingsPage() {
   }, []);
 
   const loadListings = async () => {
-    // 1. 获取所有 listings（只有 owner、title、thumbnail）
     const res = await axios.get("http://localhost:5005/listings");
     const myEmail = localStorage.getItem("email");
 
-    // 2. 过滤自己的 listing
     const mine = res.data.listings.filter(l => l.owner === myEmail);
 
-    // 3. 对每个 listing 请求完整详情
     const detailed = await Promise.all(
       mine.map(async (l) => {
         const detail = await axios.get(`http://localhost:5005/listings/${l.id}`);
@@ -73,17 +70,29 @@ function HostedListingsPage() {
           }}
         >
           {/* Thumbnail */}
-          <img src={list.thumbnail} width="150" />
+          {list.metadata.youtubeUrl ? (
+            <iframe 
+              width="200" 
+              height="120" 
+              src={list.metadata.youtubeUrl}
+              title="YouTube video"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          ) : (
+            <img src={list.thumbnail} width="200" />
+          )}
 
           {/* Title */}
           <h2>{list.title}</h2>
 
           {/* REQUIRED FIELDS */}
-          <p><b>Property Type:</b> {list.metadata.type}</p>
-          <p><b>Beds:</b> {list.metadata.beds}</p>
-          <p><b>Bathrooms:</b> {list.metadata.bathrooms}</p>
-          <p><b>Price per night:</b> ${list.price}</p>
-          <p><b>Total reviews:</b> {list.reviews.length}</p>
+        <p><b>Property Type:</b> {list.metadata.propertyType}</p>
+        <p><b>Beds:</b> {list.metadata.bedrooms.length}</p>
+        <p><b>Bathrooms:</b> {list.metadata.bathrooms}</p>
+        <p><b>Price per night:</b> ${list.price}</p>
+        <p><b>Total reviews:</b> {list.reviews.length}</p>
 
           {/* SVG rating (simple stars) */}
           <p>

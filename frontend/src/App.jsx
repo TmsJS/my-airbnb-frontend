@@ -92,7 +92,7 @@ function App() {
           </Grid>
         </Grid>
       </nav>
-
+            {/* Routes */}
       <Routes>
         {token !== 'CHECKING' && (
           <>

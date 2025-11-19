@@ -21,7 +21,9 @@ that requires you to provide the following details:
 7.Bedrooms in the property (e.g. each bedroom could include number of beds and their type)
 8.Property amenities
 
-Using a button, a new listing on the server is created and visibly added to the dashboard (the Hosted Listings Screen) once all of the required fields have been filled out correctly.
+Using a button, a new listing on the server is created 
+and visibly added to the dashboard (the Hosted Listings Screen) 
+once all of the required fields have been filled out correctly.
 
 */
 function CreateListingPage() {
@@ -42,7 +44,10 @@ function CreateListingPage() {
   const [amenities, setAmenities] = useState("");
   const [error, setError] = useState("");
 
-  // ✔ 添加 bedroom（一个 bedroom 可以有多个床）
+  //2.2.3 YouTube Listing Thumbnail 🙉🙉🙉
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+
+  // Add bedroom 
   const addBedroom = () => {
     if (!newBedCount || !newBedType) {
       setError("You must enter bed count and bed type.");
@@ -60,7 +65,7 @@ function CreateListingPage() {
     setError("");
   };
 
-  // ✔ 提交
+  // Submit
   const submit = async () => {
     if (!title || !address || !price || !propertyType || !bathrooms) {
       setError("Please fill in all required fields.");
@@ -71,13 +76,16 @@ function CreateListingPage() {
       title,
       address,
       price: Number(price),
-      thumbnail: thumbnail || "https://placehold.co/400", // 默认图
-
+      thumbnail: thumbnail || "https://placehold.co/400", // default image
+      
       metadata: {
         propertyType,
         bathrooms: Number(bathrooms),
         bedrooms,
         amenities: amenities ? amenities.split(",").map(a => a.trim()) : [],
+        //2.2.3 YouTube Listing Thumbnail
+        youtubeUrl: youtubeUrl || "https://www.youtube.com/embed/mRD0-GxqHVo",
+        // "Heat waves" by Glass Animal
       },
     };
 
@@ -136,6 +144,15 @@ function CreateListingPage() {
         label="Thumbnail URL (optional)"
         value={thumbnail}
         onChange={(e) => setThumbnail(e.target.value)}
+        sx={{ marginBottom: 2 }}
+      />
+
+      {/* YouTube Listing Thumbnail */}
+      <TextField 
+        fullWidth
+        label="YouTube Embed URL (optional)" 
+        value={youtubeUrl}
+        onChange={e => setYoutubeUrl(e.target.value)}
         sx={{ marginBottom: 2 }}
       />
 
