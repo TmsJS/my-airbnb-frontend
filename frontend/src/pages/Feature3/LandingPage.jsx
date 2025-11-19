@@ -143,6 +143,185 @@ function LandingPage() {
     );
   };
 
+  return (
+    <div style={{ padding: 20 }}>
+      <h1>Available Listings</h1>
 
+      {/* SEARCH BOX */}
+      <div
+        style={{
+          marginBottom: 30,
+          padding: 20,
+          border: "1px solid #ccc",
+          borderRadius: 10,
+          maxWidth: 800,
+          background: "#fafafa"
+        }}
+      >
+        <h2 style={{ marginBottom: 15 }}>Search Filters</h2>
+
+        {/* 1. Title Search */}
+        <input
+          placeholder="Search by title or location"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          style={{
+            width: "95%",
+            padding: "10px 12px",
+            marginBottom: 15,
+            fontSize: 16,
+            borderRadius: 6,
+            border: "1px solid #ccc"
+          }}
+        />
+
+        {/* 2. Beds */}
+        <div style={{ display: "flex", gap: 10, marginBottom: 15 }}>
+          <input
+            placeholder="Min Beds"
+            value={minBeds}
+            onChange={(e) => setMinBeds(e.target.value)}
+            style={{
+              flex: 1,
+              padding: "10px 12px",
+              fontSize: 16,
+              borderRadius: 6,
+              border: "1px solid #ccc"
+            }}
+          />
+          <input
+            placeholder="Max Beds"
+            value={maxBeds}
+            onChange={(e) => setMaxBeds(e.target.value)}
+            style={{
+              flex: 1,
+              padding: "10px 12px",
+              fontSize: 16,
+              borderRadius: 6,
+              border: "1px solid #ccc"
+            }}
+          />
+        </div>
+
+        {/* 3. Price */}
+        <div style={{ display: "flex", gap: 10, marginBottom: 15 }}>
+          <input
+            placeholder="Min Price"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            style={{
+              flex: 1,
+              padding: "10px 12px",
+              fontSize: 16,
+              borderRadius: 6,
+              border: "1px solid #ccc"
+            }}
+          />
+          <input
+            placeholder="Max Price"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            style={{
+              flex: 1,
+              padding: "10px 12px",
+              fontSize: 16,
+              borderRadius: 6,
+              border: "1px solid #ccc"
+            }}
+          />
+        </div>
+
+        {/* 4. Date Range */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            marginBottom: 15
+          }}
+        >
+          <label style={{ width: 90 }}>Date Start:</label>
+          <input
+            type="date"
+            value={dateStart}
+            onChange={(e) => setDateStart(e.target.value)}
+            style={{
+              flex: 1,
+              padding: "10px 12px",
+              fontSize: 16,
+              borderRadius: 6,
+              border: "1px solid #ccc"
+            }}
+          />
+
+          <label style={{ width: 80 }}>Date End:</label>
+          <input
+            type="date"
+            value={dateEnd}
+            onChange={(e) => setDateEnd(e.target.value)}
+            style={{
+              flex: 1,
+              padding: "10px 12px",
+              fontSize: 16,
+              borderRadius: 6,
+              border: "1px solid #ccc"
+            }}
+          />
+        </div>
+
+        {/* 5. Rating Sort */}
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ marginRight: 10 }}>Rating Sort:</label>
+          <select
+            value={ratingSort}
+            onChange={(e) => setRatingSort(e.target.value)}
+            style={{
+              padding: "10px 12px",
+              fontSize: 16,
+              borderRadius: 6,
+              border: "1px solid #ccc"
+            }}
+          >
+            <option value="">None</option>
+            <option value="asc">Low -> High</option>
+            <option value="desc">High -> Low</option>
+          </select>
+        </div>
+
+        {/* Search Button */}
+        <button
+          onClick={doSearch}
+          style={{
+            padding: "12px 20px",
+            fontSize: 16,
+            borderRadius: 8,
+            border: "none",
+            background: "#4CAF50",
+            color: "white",
+            cursor: "pointer",
+            fontWeight: "bold"
+          }}
+        >
+          Search
+        </button>
+      </div>
+
+
+      {/* RESULTS */}
+      {filtered.length === 0 ? (
+        <p>No listings match the filters.</p>
+      ) : (
+        filtered.map((l) => (
+          <div key={l.id} style={{ border: "1px solid #ccc", padding: 10, marginBottom: 10 }}>
+            <h3>{l.title}</h3>
+            <img src={l.thumbnail} width="200" />
+            <p>Reviews: {l.reviews.length}</p>
+            <p>Rating: {avg(l).toFixed(1)}</p>
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
 
 export default LandingPage;
