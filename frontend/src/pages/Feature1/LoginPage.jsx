@@ -28,6 +28,7 @@ function LoginPage(props) {
       setEmail("");
   };
     // Submit function 
+    // 3.A [button] must exist to allow [submission] of form
     const submit = async () => {
       const bodyObj = { email, password };
 
