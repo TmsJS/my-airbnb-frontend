@@ -4,7 +4,7 @@ import axios from "axios";
 
 function ReviewsSection({ listing, onRatingClick }) {
   const token = localStorage.getItem("token");
-  const email = localStorage.getItem("email");
+  //const email = localStorage.getItem("email");
 
   const [score, setScore] = useState("");
   const [comment, setComment] = useState("");
@@ -53,15 +53,15 @@ function ReviewsSection({ listing, onRatingClick }) {
 
       
       {/* ⭐ STAR RATING WITH TOOLTIP     */}
-            <Tooltip title={tooltipContent} placement="right" arrow>
+      <Tooltip title={tooltipContent} placement="right" arrow>
         <div style={{ fontSize: 20, cursor: "default", marginBottom: 10 }}>
           ⭐ Average Rating:{" "}
           {totalReviews === 0
             ? "No reviews"
             : (
-                listing.reviews.reduce((s, r) => s + r.score, 0) /
+              listing.reviews.reduce((s, r) => s + r.score, 0) /
                 listing.reviews.length
-              ).toFixed(1)}
+            ).toFixed(1)}
         </div>
       </Tooltip>
 

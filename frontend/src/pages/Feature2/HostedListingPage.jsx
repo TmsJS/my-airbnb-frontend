@@ -43,7 +43,7 @@ function HostedListingsPage() {
         }
       );
       loadListings();
-    } catch (err) {
+    } catch (_err) {
       alert("Failed to unpublish listing.");
     }
   };
@@ -98,11 +98,11 @@ function HostedListingsPage() {
             <b>Rating:</b>
             {list.reviews.length > 0
               ? "⭐".repeat(
-                  Math.round(
-                    list.reviews.reduce((a, r) => a + r.score, 0) /
+                Math.round(
+                  list.reviews.reduce((a, r) => a + r.score, 0) /
                       list.reviews.length
-                  )
                 )
+              )
               : "No ratings"}
           </p>
 

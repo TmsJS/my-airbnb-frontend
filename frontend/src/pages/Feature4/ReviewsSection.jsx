@@ -12,8 +12,8 @@ function ReviewsSection({ listing, onRatingClick, onReviewsUpdated }) {
   const [canReview, setCanReview] = useState(false);
   const [message, setMessage] = useState("");
 
-    //  Check if user is eligible to review
-    useEffect(() => {
+  //  Check if user is eligible to review
+  useEffect(() => {
     if (token) checkEligibility();
   }, [listing]);
 
@@ -31,14 +31,14 @@ function ReviewsSection({ listing, onRatingClick, onReviewsUpdated }) {
       );
 
       setCanReview(acceptedBookings.length > 0);
-    } catch (err) {
-      console.error("Failed to load bookings", err);
+    } catch (_err) {
+      console.error("Failed to load bookings", _err);
     }
   };
 
   
   // Submit review
-    const submit = async () => {
+  const submit = async () => {
     try {
       await axios.post(
         `http://localhost:5005/listings/${listing.id}/review`,
@@ -56,7 +56,7 @@ function ReviewsSection({ listing, onRatingClick, onReviewsUpdated }) {
 
       // Inform parent component (ListingDetailPage) to reload listing
       onReviewsUpdated();
-    } catch (err) {
+    } catch (_err) {
       setMessage("Failed to post review.");
     }
   };

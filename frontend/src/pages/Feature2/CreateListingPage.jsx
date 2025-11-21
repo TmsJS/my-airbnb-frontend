@@ -97,7 +97,7 @@ function CreateListingPage() {
       });
 
       navigate("/hosted");
-    } catch (err) {
+    } catch (_err) {
       setError("Failed to create listing.");
     }
   };

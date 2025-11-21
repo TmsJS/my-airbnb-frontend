@@ -286,8 +286,8 @@ function LandingPage() {
             }}
           >
             <option value="">None</option>
-            <option value="asc">Low -> High</option>
-            <option value="desc">High -> Low</option>
+            <option value="asc">Low to High</option>
+            <option value="desc">High to Low</option>
           </select>
         </div>
 

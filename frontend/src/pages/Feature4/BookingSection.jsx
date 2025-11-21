@@ -54,9 +54,9 @@ function BookingSection({ listing }) {
       setMsg("Booking created!");
       loadBookings();
 
-    } catch (err) {
-      console.error("Booking error:", err.response?.data || err.message);
-      setMsg("Booking failed: " + (err.response?.data?.error || err.message));
+    } catch (_err) {
+      console.error("Booking error:", _err.response?.data || _err.message);
+      setMsg("Booking failed: " + (_err.response?.data?.error || _err.message));
     }
   };
 

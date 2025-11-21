@@ -64,9 +64,9 @@ function ListingDetailPage() {
     listing.reviews.length === 0
       ? 0
       : (
-          listing.reviews.reduce((s, r) => s + r.score, 0) /
+        listing.reviews.reduce((s, r) => s + r.score, 0) /
           listing.reviews.length
-        ).toFixed(1);
+      ).toFixed(1);
 
   // price display logic
   let priceDisplay = `Price: $${listing.price} per night`;

@@ -42,15 +42,6 @@ function EditListingPage() {
     const res = await axios.get(`http://localhost:5005/listings/${id}`);
     const l = res.data.listing;
     //Provide safe fallback metadata 
-    const m = l.metadata || {
-      propertyType: "",
-      bathrooms: 0,
-      bedrooms: [],
-      amenities: [],
-      images: [],
-      youtubeUrl: ""
-    };
-
     setTitle(l.title);
     setAddress(l.address);
     setPrice(l.price);
@@ -98,6 +89,7 @@ function EditListingPage() {
 
   const save = async () => {
     const token = localStorage.getItem("token"); 
+
     const body = {
       title,
       address,
@@ -118,13 +110,14 @@ function EditListingPage() {
       body,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,   // ← 用上 token
         }
       }
     );
 
     navigate("/hosted");
   };
+
 
   return (
     <div style={{ padding: 20 }}>

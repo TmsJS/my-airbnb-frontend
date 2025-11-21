@@ -36,7 +36,7 @@ export default function BookingManagementPage() {
     try {
       const res = await axios.get(`http://localhost:5005/listings/${id}`);
       setListing(res.data.listing);
-    } catch (err) {
+    } catch (_err) {
       setError("Failed to fetch listing details");
     }
   };
@@ -57,7 +57,7 @@ export default function BookingManagementPage() {
 
       setBookings(mine);
       computeSummary(mine);
-    } catch (err) {
+    } catch (_err) {
       setError("Failed to fetch bookings");
     }
   };
@@ -73,7 +73,7 @@ export default function BookingManagementPage() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       loadBookings();
-    } catch (err) {
+    } catch (_err) {
       alert("Failed to accept booking.");
     }
   };
@@ -89,7 +89,7 @@ export default function BookingManagementPage() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       loadBookings();
-    } catch (err) {
+    } catch (_err) {
       alert("Failed to decline booking.");
     }
   };
