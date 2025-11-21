@@ -171,5 +171,129 @@ function ListingDetails() {
     
 
 
+  return (
+    <div>
+        <h2 style={{ marginBottom: 15 }}>{listing.title}</h2>    
+        <img 
+            src={listing.thumbnail} 
+            alt={listing.title} 
 
+        />
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+            <p>Address: **{listing.address}**</p>
+            <p>Price: **${listing.price}** per night</p>
+            <p>Type: {listing.metadata.propertyType}</p>
+        </div>
+         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+            <p>Bathrooms: {listing.metadata.bathrooms}</p>
+            <p>Beds: {totalBeds}</p>
+            <p>Rooms: {listing.metadata.bedrooms.length}</p>
+        </div>
+        <hr />
+        
+         <h3>Amenities</h3>
+        {listing.metadata.amenities && listing.metadata.amenities.length > 0 ? (
+            <ul>
+                {listing.metadata.amenities.map((amenity, index) => (
+                    <li key={index}>
+                        {amenity}
+                    </li>
+                ))}
+            </ul>
+        ) : (
+            <p>No amenities listed.</p>
+        )}
+
+        <hr />
+        <h3>Booking</h3>
+
+        {!showDateChecker ? (
+            <Button 
+                onClick={handleBookNowClick} 
+                variant="contained" 
+                color="success"
+                size="large"
+                disabled={!loggedIn} 
+            >
+                {loggedIn ? 'Book Now & Check Dates' : 'Login to Book'}
+            </Button>
+        ) : (
+            
+            <div>
+                <p style={{ marginBottom: 15 }}>**Please select your desired dates:**</p>
+                
+               
+                <div style={{ display: 'flex', gap: 20, alignItems: 'center', marginBottom: 10 }}>
+                    <TextField
+                        label="Start Date"
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        style={{ flex: 1 }}
+                    />
+                    <TextField
+                        label="End Date"
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        style={{ flex: 1 }}
+                    />
+                    
+                    <Button 
+                        onClick={checkAvailabilityAndBook}
+                        variant="contained" 
+                        color="primary"
+                    >
+                        Check Availability
+                    </Button>
+                </div>
+
+                {msg && (
+                    <Alert severity={isAvailable === true ? "success" : "warning"} style={{ marginBottom: 15 }}>
+                        {msg}
+                    </Alert>
+                )}
+                
+                {isAvailable === true && (
+                    <Button
+                        onClick={handleConfirmBooking}
+                        variant="contained"
+                        color="success"
+                        size="large"
+                        style={{ marginTop: 5, marginRight: 15 }}
+                    >
+                        Confirm Booking
+                    </Button>
+                )}
+                
+               
+                <Button onClick={() => setShowDateChecker(false)} variant="outlined" size="small" style={{marginTop: 10}}>
+                    Cancel Selection
+                </Button>
+            </div>
+        )}
+
+        <hr />
+        
+        {/* reviews unfinished had some issues with trying to implement*/}
+        <h3 style={{ marginTop: 30 }}>Reviews and Ratings</h3>
+            <ul>
+            {listing.reviews.map((review, index) => (
+                <li key={index} style={{ marginBottom: 5 }}>
+                    Rating: {review.score}/5 - Comment: "{review.comment}"
+                </li>
+                ))}
+            </ul>
+        
+        
+        <div style={{ marginTop: 30 }}>
+            <Button onClick={goBack} variant="contained">Go Back to Listings</Button>
+            <Button onClick={getStatus} variant="contained">Leave A review</Button>
+        </div>
+    </div>
+  )
+}
+
+export default ListingDetails;
         
