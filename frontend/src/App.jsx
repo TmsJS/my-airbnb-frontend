@@ -49,7 +49,7 @@ function App() {
           }
         }
       );
-    } catch (err) {
+    } catch (_err) {
       console.log('Logout failed (ignored)');
     }
 
