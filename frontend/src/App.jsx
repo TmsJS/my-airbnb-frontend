@@ -11,7 +11,6 @@ import axios from 'axios';
 import LoginPage from './pages/Feature1/LoginPage.jsx';
 import RegisterPage from './pages/Feature1/RegistrationPage.jsx';
 
-import LandingPage from './pages/Feature1/LandingPage.jsx';
 import Dashboard from './pages/Feature1/Dashboard.jsx';
 
 /* 2.2 Hosted Listing */
@@ -19,6 +18,9 @@ import HostedListingsPage from './pages/Feature2/HostedListingPage.jsx';
 import CreateListingPage from './pages/Feature2/CreateListingPage.jsx';
 import EditListingPage from './pages/Feature2/EditListingPage.jsx';
 import PublishListingPage from './pages/Feature2/PublishListingPage.jsx';
+
+/* 2.3. Landing Page: Listings and Search*/
+import LandingPage from './pages/Feature3/LandingPage.jsx';
 
 
 function App() {
@@ -43,7 +45,8 @@ function App() {
           }
         }
       );
-    } catch (_) {
+    } catch (err) {
+      console.log('Logout failed (ignored)');
     }
 
     localStorage.removeItem('token');
@@ -94,7 +97,7 @@ function App() {
         {token !== 'CHECKING' && (
           <>
             {/* DEFAULT PAGE */}
-            {/* http://localhost:3000/--->LandingPage */}
+            {/* http://localhost:3000/---> 2.3.1 LandingPage */}
             <Route path="/" element={<LandingPage />} />
 
             {/* 2.1 AUTH */}

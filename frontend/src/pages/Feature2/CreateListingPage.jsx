@@ -190,6 +190,7 @@ function CreateListingPage() {
           type="number"
           value={newBedCount}
           onChange={(e) => setNewBedCount(e.target.value)}
+          inputProps={{ min: 0 }} 
         />
 
         <TextField
