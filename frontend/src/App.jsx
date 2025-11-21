@@ -10,7 +10,6 @@ import axios from 'axios';
 /* 2.1 AUTH */
 import LoginPage from './pages/Feature1/LoginPage.jsx';
 import RegisterPage from './pages/Feature1/RegistrationPage.jsx';
-
 import Dashboard from './pages/Feature1/Dashboard.jsx';
 
 /* 2.2 Hosted Listing */
@@ -22,6 +21,11 @@ import PublishListingPage from './pages/Feature2/PublishListingPage.jsx';
 /* 2.3. Landing Page: Listings and Search*/
 import LandingPage from './pages/Feature3/LandingPage.jsx';
 
+/* 2.4. Viewing and Booking Listings*/
+import ListingViewing from './pages/Feature4/ListingViewing.jsx';
+
+/* 2.5. Removing a Listing, Managing Booking Requests */
+import BookingManagementPage from './pages/Feature5/BookingManagementPage.jsx';
 
 function App() {
   const [token, setToken] = useState('CHECKING');
@@ -96,7 +100,7 @@ function App() {
       <Routes>
         {token !== 'CHECKING' && (
           <>
-            {/* DEFAULT PAGE */}
+            {/* 2.3 LandingPage / DEFAULT PAGE */}
             {/* http://localhost:3000/---> 2.3.1 LandingPage */}
             <Route path="/" element={<LandingPage />} />
 
@@ -105,6 +109,8 @@ function App() {
             <Route path="/login" element={<LoginPage setToken={setToken} />} />
             {/* localhost:3000/register--->RegisterPage  */}
             <Route path="/register" element={<RegisterPage setToken={setToken} />} />
+            {/* DASHBOARD */}
+            <Route path="/dashboard" element={<Dashboard token={token} />} />
 
             {/* 2.2 HOSTED LISTINGS */}
             {/* 2.2.1 Hosted Listings Screen */}
@@ -115,9 +121,13 @@ function App() {
             <Route path="/hosted/edit/:id" element={<EditListingPage />} />
             {/* 2.2.5 Publish Listing */}
             <Route path="/hosted/publish/:id" element={<PublishListingPage />} />
+
+            {/* 2.4 HOSTED LISTINGS */}
+            <Route path="/listing/:id" element={<ListingViewing />} />
+
+            {/* 2.5 REMOVING LISTINGS MANAGE BOOKING */}
+            <Route path="/hosted/manage/:id" element={<BookingManagementPage />} />
             
-            {/* DASHBOARD */}
-            <Route path="/dashboard" element={<Dashboard token={token} />} />
           </>
         )}
       </Routes>

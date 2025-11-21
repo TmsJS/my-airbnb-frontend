@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function LandingPage() {
+  const navigate = useNavigate();
+
   const [listings, setListings] = useState([]);
   const [filtered, setFiltered] = useState([]);
 
@@ -312,9 +315,19 @@ function LandingPage() {
         <p>No listings match the filters.</p>
       ) : (
         filtered.map((l) => (
-          <div key={l.id} style={{ border: "1px solid #ccc", padding: 10, marginBottom: 10 }}>
+          <div 
+            key={l.id} 
+            onClick={() => navigate(`/listing/${l.id}`)}
+            style={{ 
+              border: "1px solid #ccc", 
+              padding: 10, 
+              marginBottom: 10,
+              cursor: "pointer", 
+              borderRadius: 8
+            }}
+          >
             <h3>{l.title}</h3>
-            <img src={l.thumbnail} width="200" />
+            <img src={l.thumbnail} width="200" alt="" />
             <p>Reviews: {l.reviews.length}</p>
             <p>Rating: {avg(l).toFixed(1)}</p>
           </div>
