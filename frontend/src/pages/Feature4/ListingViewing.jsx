@@ -1,299 +1,172 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import axios from 'axios';
-import Alert from '@mui/material/Alert';
+import { useParams, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-function ListingDetails() {
-    const navigate = useNavigate();
-    const location = useLocation(); 
-    const userEmail = localStorage.getItem("email");
+import BookingSection from "./BookingSection";
+import ReviewsSection from "./ReviewsSection";
+import RatingBreakdownModal from "./RatingBreakdownModal";
 
-    const [listing, setListing] = useState(null);
-    const [error, setError] = useState(null);
-    const [booking, setBooking] = useState(null);
-    const [status, setStatus] = useState(null);
- 
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const [isAvailable, setIsAvailable] = useState(null); 
-    const [msg, setMsg] = useState('');
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [showDateChecker, setShowDateChecker] = useState(false); 
+function ListingDetailPage() {
+  const { id } = useParams();
+  const location = useLocation();  
+  const [listing, setListing] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    const listingId = location.state?.listingId;
-    const token = localStorage.getItem("token");
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRating, setSelectedRating] = useState(null);
 
-    useEffect(() => {
-        
-        if (token) {
-            setLoggedIn(true); 
-        } else {
-            setLoggedIn(false);
-        }
+  const token = localStorage.getItem("token");
+  const userEmail = localStorage.getItem("email");
 
-        const fetchDetails = async () => {
-            setError(null);
-            try {
-                const response = await axios.get(
-                    `http://localhost:5005/listings/${listingId}`
-                );
-                setListing(response.data.listing);
-            } catch (err) {
-                setError("Failed to collect details");
-            }
-        };
+  // From LandingPage: we pass dateStart + dateEnd through navigate
+  const searchStart = location.state?.searchStart || null;
+  const searchEnd = location.state?.searchEnd || null;
 
-        fetchDetails();
-        getBookings();
-    }, [listingId, token]); 
+  const [userBookings, setUserBookings] = useState([]);
 
-    const handleBookNowClick = () => {
-        setShowDateChecker(true);
-        setIsAvailable(null);
-        setMsg('');
-    };
+  useEffect(() => {
+    loadListing();
+    loadUserBookings();
+  }, [id]);
 
-    const handleConfirmBooking = () => {
-        
-        console.log(`Booking confirmed for listing ${listingId} from ${startDate} too ${endDate}`);
+  const loadListing = async () => {
+    const res = await axios.get(`http://localhost:5005/listings/${id}`);
+    setListing({ id, ...res.data.listing });
+    setLoading(false);
+  };
 
-        axios.post(`http://localhost:5005/bookings/new/${listingId}`, { 
-            dateRange: { 
-                start: startDate, 
-                end: endDate },
-            totalPrice: (calculateBookingDays(startDate,endDate)*listing.price)},
-        { 
-            headers: { 
-                Authorization: `Bearer ${token}` }
-        })
-        .then(response => {
-            setMsg("Booking made!");
-            
-        })
-        .catch(error => {
-            setMsg("Booking failed");
-        });
-    };
+  const loadUserBookings = async () => {
+    if (!token) return;
 
-    const getBookings = () => {       
-        axios.get(`http://localhost:5005/bookings`,
-        { 
-            headers: { 
-                Authorization: `Bearer ${token}` 
-            }
-        })
-        .then(response => {
-            setBooking(response.data.bookings);
-        })
-        .catch(error => {
-            console.log(error);
-        });
-    };
-    
-    const calculateBookingDays = (start, end) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const ms = 1000 * 60 * 60 * 24;
-    const diffms = endDate.getTime() - startDate.getTime();
-    const bookingDays = Math.round(diffms / ms);
-    return parseInt(bookingDays, 10);
-};
+    const res = await axios.get("http://localhost:5005/bookings", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
 
-    const checkAvailabilityAndBook = () => {
-        setIsAvailable(null);
-        setMsg('');
+    const my = res.data.bookings.filter(
+      (b) => b.listingId === id && b.owner === userEmail
+    );
 
-        if (!startDate || !endDate) {
-            setMsg("Please select both a start and end date.");
-            return;
-        }
+    setUserBookings(my);
+  };
 
-        const userStart = new Date(startDate);
-        const userEnd = new Date(endDate);
+  if (loading || !listing) return <h2>Loading…</h2>;
 
-        if (userStart >= userEnd) {
-            setMsg("End date must be after the start date.");
-            return;
-        }
+  // total beds
+  const totalBeds = listing.metadata.bedrooms.reduce(
+    (sum, b) => sum + b.numBeds,
+    0
+  );
 
-        const isBookingPossible = listing.availability.some(period => {
-            const periodStart = period.start; 
-            const periodEnd = period.end;     
-            return (periodStart <= startDate) && (periodEnd >= endDate);
-        });
+  // avg rating
+  const avgRating =
+    listing.reviews.length === 0
+      ? 0
+      : (
+          listing.reviews.reduce((s, r) => s + r.score, 0) /
+          listing.reviews.length
+        ).toFixed(1);
 
-        setIsAvailable(isBookingPossible);
+  // price display logic
+  let priceDisplay = `Price: $${listing.price} per night`;
 
-        if (isBookingPossible) {
-            setMsg("to confirm click 'Confirm booking'");
-        } else {
-            setMsg("Not available");
-        }
-    };
-    
-    const goBack = () => {
-        navigate("/");
+  if (searchStart && searchEnd) {
+    const days =
+      (new Date(searchEnd) - new Date(searchStart)) /
+      (1000 * 60 * 60 * 24);
+
+    if (days > 0) {
+      priceDisplay = `Price: $${listing.price * days} per stay (${days} nights)`;
     }
-
-    if (error) {
-        return <div style={{padding: 20}}><Alert severity="error">{error}</Alert> <Button onClick={goBack}>Back</Button></div>;
-    }
-
-    if (!listing) {
-        return <div style={{padding: 20}}><h2>Loading...</h2><Button onClick={goBack}>Back</Button></div>;
-    }
-
-    const totalBeds = listing.metadata.bedrooms.reduce((sum, b) => sum + b.numBeds, 0);
-  
-    const getStatus = () =>{
-        if (!booking || booking.length === 0) {
-            return; 
-        }
-
-        const userBookings = booking.filter(booking => booking.owner === userEmail);
-        console.log(userBookings);
-        if (userBookings.length === 0) {
-            return;
-        }
-        for (const item of userBookings) {
-            if (item.status == "Accepted"){
-                setStatus(item.status);
-                return;
-            }
-            else{
-                setStatus(item.Status);
-            }
-            console.log(status);
-        }
-    }
-    
-
+  }
 
   return (
-    <div>
-        <h2 style={{ marginBottom: 15 }}>{listing.title}</h2>    
-        <img 
-            src={listing.thumbnail} 
-            alt={listing.title} 
+    <div style={{ padding: 20, maxWidth: 800, margin: "0 auto" }}>
+      <h1>{listing.title}</h1>
 
+      {/* IMAGES (including thumbnail + metadata.images) */}
+      <h3>Images</h3>
+      <div style={{ display: "flex", gap: 10, overflowX: "auto" }}>
+        <img
+          src={listing.thumbnail}
+          alt="thumbnail"
+          width="250"
+          style={{ borderRadius: 8 }}
         />
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-            <p>Address: **{listing.address}**</p>
-            <p>Price: **${listing.price}** per night</p>
-            <p>Type: {listing.metadata.propertyType}</p>
-        </div>
-         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
-            <p>Bathrooms: {listing.metadata.bathrooms}</p>
-            <p>Beds: {totalBeds}</p>
-            <p>Rooms: {listing.metadata.bedrooms.length}</p>
-        </div>
-        <hr />
-        
-         <h3>Amenities</h3>
-        {listing.metadata.amenities && listing.metadata.amenities.length > 0 ? (
-            <ul>
-                {listing.metadata.amenities.map((amenity, index) => (
-                    <li key={index}>
-                        {amenity}
-                    </li>
-                ))}
-            </ul>
-        ) : (
-            <p>No amenities listed.</p>
-        )}
+        {listing.metadata.images?.map((url, i) => (
+          <img
+            key={i}
+            src={url}
+            alt={`img-${i}`}
+            width="250"
+            style={{ borderRadius: 8 }}
+          />
+        ))}
+      </div>
 
-        <hr />
-        <h3>Booking</h3>
+      <p><strong>Address:</strong> {listing.address}</p>
+      <p><strong>Type:</strong> {listing.metadata.propertyType}</p>
+      <p><strong>Bathrooms:</strong> {listing.metadata.bathrooms}</p>
+      <p><strong>Bedrooms:</strong> {listing.metadata.bedrooms.length}</p>
+      <p><strong>Total Beds:</strong> {totalBeds}</p>
 
-        {!showDateChecker ? (
-            <Button 
-                onClick={handleBookNowClick} 
-                variant="contained" 
-                color="success"
-                size="large"
-                disabled={!loggedIn} 
-            >
-                {loggedIn ? 'Book Now & Check Dates' : 'Login to Book'}
-            </Button>
-        ) : (
-            
-            <div>
-                <p style={{ marginBottom: 15 }}>**Please select your desired dates:**</p>
-                
-               
-                <div style={{ display: 'flex', gap: 20, alignItems: 'center', marginBottom: 10 }}>
-                    <TextField
-                        label="Start Date"
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        style={{ flex: 1 }}
-                    />
-                    <TextField
-                        label="End Date"
-                        type="date"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        style={{ flex: 1 }}
-                    />
-                    
-                    <Button 
-                        onClick={checkAvailabilityAndBook}
-                        variant="contained" 
-                        color="primary"
-                    >
-                        Check Availability
-                    </Button>
-                </div>
+      {/* PRICE */}
+      <p><strong>{priceDisplay}</strong></p>
 
-                {msg && (
-                    <Alert severity={isAvailable === true ? "success" : "warning"} style={{ marginBottom: 15 }}>
-                        {msg}
-                    </Alert>
-                )}
-                
-                {isAvailable === true && (
-                    <Button
-                        onClick={handleConfirmBooking}
-                        variant="contained"
-                        color="success"
-                        size="large"
-                        style={{ marginTop: 5, marginRight: 15 }}
-                    >
-                        Confirm Booking
-                    </Button>
-                )}
-                
-               
-                <Button onClick={() => setShowDateChecker(false)} variant="outlined" size="small" style={{marginTop: 10}}>
-                    Cancel Selection
-                </Button>
-            </div>
-        )}
+      {/* AMENITIES */}
+      <h3>Amenities</h3>
+      {listing.metadata.amenities?.length > 0 ? (
+        <ul>
+          {listing.metadata.amenities.map((a, i) => (
+            <li key={i}>{a}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>No amenities listed.</p>
+      )}
 
-        <hr />
-        
-        {/* reviews unfinished had some issues with trying to implement*/}
-        <h3 style={{ marginTop: 30 }}>Reviews and Ratings</h3>
-            <ul>
-            {listing.reviews.map((review, index) => (
-                <li key={index} style={{ marginBottom: 5 }}>
-                    Rating: {review.score}/5 - Comment: "{review.comment}"
-                </li>
-                ))}
-            </ul>
-        
-        
-        <div style={{ marginTop: 30 }}>
-            <Button onClick={goBack} variant="contained">Go Back to Listings</Button>
-            <Button onClick={getStatus} variant="contained">Leave A review</Button>
-        </div>
+      {/* USER BOOKINGS STATUS */}
+      {token && (
+        <>
+          <h3>Your Bookings for This Listing</h3>
+          {userBookings.length === 0 ? (
+            <p>You have no bookings.</p>
+          ) : (
+            userBookings.map((b, i) => (
+              <p key={i}>
+                {b.dateRange.start} → {b.dateRange.end} — Status:{" "}
+                <strong>{b.status}</strong>
+              </p>
+            ))
+          )}
+        </>
+      )}
+
+      {/* BOOKING SECTION */}
+      <BookingSection listing={listing} />
+
+      {/* REVIEWS */}
+      <h3>Reviews</h3>
+      <p><strong>Average Rating: {avgRating} ⭐</strong></p>
+
+      <ReviewsSection
+        listing={listing}
+        onRatingClick={(rating) => {
+          setSelectedRating(rating);
+          setOpenModal(true);
+        }}
+      />
+
+      <RatingBreakdownModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        listing={listing}
+        rating={selectedRating}
+      />
     </div>
-  )
+  );
 }
 
-export default ListingDetails;
-        
+export default ListingDetailPage;
