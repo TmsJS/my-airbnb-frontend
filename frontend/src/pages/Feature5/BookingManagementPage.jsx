@@ -141,5 +141,125 @@ export default function BookingManagementPage() {
   const pending = bookings.filter((b) => b.status === "pending");
   const history = bookings.filter((b) => b.status !== "pending");
 
+  return (
+    <Box p={3}>
+      <Typography variant="h4" sx={{ mb: 2 }}>
+        Booking Management – Listing #{id}
+      </Typography>
 
+      {error && <Alert severity="error">{error}</Alert>}
+
+      {/* Listing info */}
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Typography variant="h6">{listing.title}</Typography>
+        <Typography>Address: {listing.address}</Typography>
+        <Typography>Type: {listing.metadata.propertyType}</Typography>
+        <Typography>Bathrooms: {listing.metadata.bathrooms}</Typography>
+        <Typography>
+          Bedrooms: {listing.metadata.bedrooms.length} | Total Beds:{" "}
+          {listing.metadata.bedrooms.reduce((s, b) => s + b.numBeds, 0)}
+        </Typography>
+        <Typography sx={{ mt: 1 }}>
+          Posted {calculateDaysOnline(listing.postedOn)} days ago
+        </Typography>
+      </Paper>
+
+      {/* Summary */}
+      <Paper sx={{ p: 2, mb: 3, borderLeft: "5px solid green" }}>
+        <Typography variant="h6">📊 This Year’s Summary</Typography>
+        <Typography>Total Days Booked: {totalDaysThisYear}</Typography>
+        <Typography>Total Profit: ${totalProfitThisYear}</Typography>
+      </Paper>
+
+      {/* Pending requests */}
+      <Typography variant="h5" sx={{ mt: 2 }}>
+        Pending Booking Requests
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+
+      {pending.length === 0 ? (
+        <Typography>No pending requests.</Typography>
+      ) : (
+        pending.map((b) => (
+          <Paper
+            key={b.id}
+            sx={{ p: 2, mb: 2, borderLeft: "4px solid orange" }}
+          >
+            <Typography>
+              <strong>Applicant:</strong> {b.owner}
+            </Typography>
+            <Typography>
+              <strong>Dates:</strong> {b.dateRange.start} → {b.dateRange.end}
+            </Typography>
+            <Typography>
+              <strong>Price:</strong> ${b.totalPrice}
+            </Typography>
+
+            <Button
+              variant="contained"
+              color="success"
+              sx={{ mt: 1, mr: 1 }}
+              onClick={() => acceptBooking(b.id)}
+            >
+              Accept
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              sx={{ mt: 1 }}
+              onClick={() => declineBooking(b.id)}
+            >
+              Decline
+            </Button>
+          </Paper>
+        ))
+      )}
+
+      {/* History */}
+      <Typography variant="h5" sx={{ mt: 4 }}>
+        Booking History (Accepted / Denied)
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+
+      {history.length === 0 ? (
+        <Typography>No booking history.</Typography>
+      ) : (
+        history.map((b) => (
+          <Paper
+            key={b.id}
+            sx={{
+              p: 2,
+              mb: 2,
+              borderLeft:
+                b.status === "accepted"
+                  ? "4px solid green"
+                  : "4px solid red",
+            }}
+          >
+            <Typography>
+              <strong>Applicant:</strong> {b.owner}
+            </Typography>
+            <Typography>
+              <strong>Dates:</strong> {b.dateRange.start} →{" "}
+              {b.dateRange.end}
+            </Typography>
+            <Typography>
+              <strong>Price:</strong> ${b.totalPrice}
+            </Typography>
+            <Typography>
+              <strong>Status:</strong> {b.status}
+            </Typography>
+          </Paper>
+        ))
+      )}
+
+      <Button
+        variant="contained"
+        sx={{ mt: 3 }}
+        onClick={() => navigate("/hosted")}
+      >
+        Back to Hosted Listings
+      </Button>
+    </Box>
+  );
 }
